@@ -3,6 +3,12 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
+require('./models/User');
+require('./models/Operator');
+require('./models/Route');
+require('./models/Trip');
+require('./models/Booking');
+
 const app = express();
 app.use(cors());
 app.use(express.json());
