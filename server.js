@@ -13,6 +13,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const tripRoutes = require('./routes/trip.routes');
+app.use('/api/trips', tripRoutes);
+
 app.get('/', (req, res) => {
   res.send('Bus Booking API is running');
 });
