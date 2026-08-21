@@ -13,6 +13,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const bookingRoutes = require('./routes/booking.routes');
+app.use('/api/bookings', bookingRoutes);
+
 const tripRoutes = require('./routes/trip.routes');
 app.use('/api/trips', tripRoutes);
 
