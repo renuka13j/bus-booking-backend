@@ -16,6 +16,9 @@ app.use(express.json());
 const tripRoutes = require('./routes/trip.routes');
 app.use('/api/trips', tripRoutes);
 
+const authRoutes = require('./routes/auth.routes');
+app.use('/api/auth', authRoutes);
+
 app.get('/', (req, res) => {
   res.send('Bus Booking API is running');
 });
