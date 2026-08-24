@@ -38,7 +38,12 @@ async function searchTrips(req, res) {
   try {
     const { source, destination, date } = req.query;
 
-    const matchingRoutes = await Route.find({ source, destination });
+    // Case-insensitive exact match using regex with 'i' flag
+    const matchingRoutes = await Route.find({
+      source: { $regex: `^${source}$`, $options: 'i' },
+      destination: { $regex: `^${destination}$`, $options: 'i' }
+    });
+
     const routeIds = matchingRoutes.map(route => route._id);
 
     const trips = await Trip.find({
