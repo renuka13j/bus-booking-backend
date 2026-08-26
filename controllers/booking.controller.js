@@ -63,4 +63,38 @@ async function getMyBookings(req, res) {
   }
 }
 
-module.exports = { createBooking, getMyBookings };
+// PATCH /api/bookings/:id/cancel
+async function cancelBooking(req, res) {
+  try {
+    const booking = await Booking.findById(req.params.id);
+
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    // Security check: only the person who made the booking can cancel it
+    if (booking.user.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'You are not allowed to cancel this booking' });
+    }
+
+    if (booking.status === 'cancelled') {
+      return res.status(400).json({ message: 'Booking is already cancelled' });
+    }
+
+    // Free up the seats on the trip
+    await Trip.updateOne(
+      { _id: booking.trip },
+      { $set: { 'seats.$[elem].isBooked': false } },
+      { arrayFilters: [{ 'elem.seatNumber': { $in: booking.seatsBooked } }] }
+    );
+
+    booking.status = 'cancelled';
+    await booking.save();
+
+    res.status(200).json({ message: 'Booking cancelled', booking });
+  } catch (err) {
+    res.status(500).json({ message: 'Cancellation failed', error: err.message });
+  }
+}
+
+module.exports = { createBooking, getMyBookings, cancelBooking };
