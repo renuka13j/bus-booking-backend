@@ -24,7 +24,7 @@ async function createBooking(req, res) {
       { $set: { 'seats.$[elem].isBooked': true } },
       {
         arrayFilters: [{ 'elem.seatNumber': { $in: seatNumbers } }],
-        new: true 
+        new: true
       }
     );
 
@@ -47,4 +47,20 @@ async function createBooking(req, res) {
   }
 }
 
-module.exports = { createBooking };
+// GET /api/bookings/my
+async function getMyBookings(req, res) {
+  try {
+    const bookings = await Booking.find({ user: req.user.id })
+      .populate({
+        path: 'trip',
+        populate: { path: 'route', populate: { path: 'operator' } }
+      })
+      .sort({ createdAt: -1 });
+
+    res.status(200).json(bookings);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch bookings', error: err.message });
+  }
+}
+
+module.exports = { createBooking, getMyBookings };
