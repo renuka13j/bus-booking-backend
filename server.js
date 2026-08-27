@@ -22,6 +22,9 @@ app.use('/api/trips', tripRoutes);
 const authRoutes = require('./routes/auth.routes');
 app.use('/api/auth', authRoutes);
 
+const adminRoutes = require('./routes/admin.routes');
+app.use('/api/admin', adminRoutes);
+
 app.get('/', (req, res) => {
   res.send('Bus Booking API is running');
 });

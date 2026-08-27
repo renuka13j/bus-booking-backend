@@ -4,7 +4,7 @@ const User = require('../models/User');
 
 async function register(req, res) {
   try {
-    const { name, email, password, phone, adminSecret } = req.body;
+    const { name, email, password, phone } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -13,14 +13,12 @@ async function register(req, res) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const role = adminSecret === process.env.ADMIN_SECRET ? 'admin' : 'user';
-
     const user = await User.create({
       name,
       email,
       password: hashedPassword,
       phone,
-      role
+      role: 'user', 
     });
 
     res.status(201).json({
