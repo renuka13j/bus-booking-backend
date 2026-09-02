@@ -32,7 +32,7 @@ const routeDefs = [
   { source: 'Chennai', destination: 'Bangalore', distanceKm: 350, departureTime: '16:00', arrivalTime: '22:00', price: 649 },
 ];
 
-const DAYS_AHEAD = 60; 
+const DAYS_AHEAD = 365; 
 
 async function seed() {
   await mongoose.connect(process.env.MONGO_URI);
