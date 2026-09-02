@@ -1,6 +1,30 @@
 const Trip = require('../models/Trip');
 const Route = require('../models/Route');
 
+// Maps common misspellings/variants to the exact city name stored in the database
+const cityAliases = {
+  bangalore: 'Bangalore',
+  banglore: 'Bangalore',
+  bengaluru: 'Bangalore',
+  bengalore: 'Bangalore',
+  mumbai: 'Mumbai',
+  bombay: 'Mumbai',
+  pune: 'Pune',
+  poona: 'Pune',
+  nagpur: 'Nagpur',
+  delhi: 'Delhi',
+  newdelhi: 'Delhi',
+  chennai: 'Chennai',
+  madras: 'Chennai',
+  jaipur: 'Jaipur',
+};
+
+function normalizeCity(input) {
+  if (!input) return input;
+  const key = input.trim().toLowerCase().replace(/\s+/g, '');
+  return cityAliases[key] || input;
+}
+
 // GET /api/trips
 async function getAllTrips(req, res) {
   try {
@@ -33,15 +57,16 @@ async function getTripById(req, res) {
   }
 }
 
-// GET /api/trips/search?source=...&destination=...&date=...
 async function searchTrips(req, res) {
   try {
     const { source, destination, date } = req.query;
 
-    // Case-insensitive exact match using regex with 'i' flag
+    const normalizedSource = normalizeCity(source);
+    const normalizedDestination = normalizeCity(destination);
+
     const matchingRoutes = await Route.find({
-      source: { $regex: `^${source}$`, $options: 'i' },
-      destination: { $regex: `^${destination}$`, $options: 'i' }
+      source: { $regex: `^${normalizedSource}$`, $options: 'i' },
+      destination: { $regex: `^${normalizedDestination}$`, $options: 'i' }
     });
 
     const routeIds = matchingRoutes.map(route => route._id);
